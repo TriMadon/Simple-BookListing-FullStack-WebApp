@@ -1,0 +1,117 @@
+version: '3.8'
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  user-book-volume:
+
+services:
+  authentication:
+    image: book-list-app/authentication-service
+    build: ./authentication-service
+    container_name: authentication
+    expose:
+      - "8081"   
+    ports: 
+      - "8082:8081"
+    networks:
+      - app-network
+      
+    
+  book-db:
+    image: mysql
+    container_name: book-db
+    volumes:
+      - "./userBookDatabase/scripts/schema.sql:/docker-entrypoint-initdb.d/1.sql"
+      - "user-book-volume:/var/lib/mysql"
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: ok
+      MYSQL_ROOT_PASSWORD: extremesecret
+      MYSQL_DATABASE: bookuser
+      MYSQL_USER: dbuser
+      MYSQL_PASSWORD: password
+    expose:
+      - "3306"
+    ports: 
+      - "3306:3306"
+    networks:
+      - app-network
+    
+    
+  book-db-api:
+    image: book-list-app/book-db-api
+    build: ./book-db-api
+    container_name: book-db-api
+    depends_on:
+      - book-db
+      - analyzed-books-db
+    expose:
+      - "3305"
+    ports:
+      - "3001:3305"
+    networks:
+      - app-network
+    
+    
+  user-book-frontend:
+    image: book-list-app/user-book-frontend
+    build:
+      context: ./
+      dockerfile: ./user-book-list/Dockerfile
+    container_name: user-book-frontend
+    depends_on:
+      - book-db
+      - book-db-api
+      - authentication
+    expose:
+      - "3000"
+    ports:
+      - "3000:3000"
+    networks:
+      - app-network
+      
+    
+  analyzed-books-db:
+    image: mongo
+    container_name: analyzed-books-db
+    volumes:
+      - "./userBookDatabase/scripts/mongo-init.js:/docker-entrypoint-initdb.d/init-mongo.js:ro"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+    expose:
+      - "27017"
+    ports: 
+      - "27017:27017"
+    networks:
+      - app-network
+   
+   
+  analysis-server:
+    image: book-list-app/analysis-server
+    build: ./book-user-analysis
+    container_name: analysis-server
+    networks:
+      - app-network
+    depends_on:
+      - book-db
+      - analyzed-books-db
+      
+  
+  book-analysis-frontend:
+    image: book-list-app/book-analysis-frontend
+    build: ./book-analysis-frontend
+    container_name: book-analysis-frontend
+    depends_on:
+      - analyzed-books-db
+      - book-db-api
+      - authentication
+    expose:
+      - "4000"
+    ports:
+      - "4000:4000"
+    networks:
+      - app-network
+  

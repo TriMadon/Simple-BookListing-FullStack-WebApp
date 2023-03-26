@@ -1,0 +1,81 @@
+.app-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 1rem;
+}
+
+table {
+  margin-left: 10px;
+  margin-right: 10px;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th,
+td {
+  border: 1px solid #ffffff;
+  text-align: left;
+  padding: 8px;
+  font-size: 32px;
+}
+
+th {
+  background-color: rgb(117, 201, 250);
+}
+
+td {
+  background-color: rgb(205, 235, 253);
+}
+
+form {
+  display: flex;
+  gap: 7px;
+}
+
+form td:last-child {
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  justify-content: space-evenly;
+}
+
+form * {
+  font-size: 28px;
+}
+
+#inputForm {
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 10px;
+}
+
+#logout {
+  margin-top: -150px;
+  margin-bottom: 100px;
+  margin-left: 5%;
+  background: indianred;
+  outline-color: indianred;
+}
+
+#welcomeMessage {
+  text-align: center;
+  margin: 20px auto;
+  font-size: 35px;
+}
+
+#bookTitles {
+  width: 400px;
+}
+
+#ratingBox {
+  width: 180px;
+}
+
+#loading {
+  margin-top: 100px;
+  margin-left: 50%;
+}
+
+
